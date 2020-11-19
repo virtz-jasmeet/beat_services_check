@@ -1,0 +1,110 @@
+fields:
+  cloud_name: virtz02_os1
+  cloud_type: PSB
+  cloud_version: 3.1.4
+
+metricbeat.max_start_delay: 10s
+
+logging.level: info
+logging.selectors: ["*"]
+
+queue.mem:
+  events: 4096
+  flush.min_events: 512
+  flush.timeout: 10s
+
+metricbeat.modules:
+- module: system
+  period: 10s
+  metricsets:
+    - process
+  enabled: true
+  processes: ['.*']
+  process.include_top_n:
+    by_cpu: 5      # include top 5 processes by CPU
+    by_memory: 5   # include top 5 processes by memory
+
+- module: system
+  period: 30s
+  metricsets:
+    - cpu
+    - memory
+    - network
+    - process
+    - process_summary
+  enabled: true
+
+- module: system
+  period: 1m
+  metricsets:
+    - filesystem
+  processors:
+  - drop_event:
+      when:
+        or:
+          - regexp:
+              system.filesystem.mount_point: '^/(sys|cgroup|proc|dev|etc|host|lib)($|/)'
+          - regexp:
+              system.filesystem.device_name: 'rootfs|tmpfs'
+
+- module: system
+  period: 15m
+  metricsets:
+    - uptime
+
+#- core
+#- diskio
+#- filesystem
+#- fsstat
+#- socket
+
+- module: ceph
+  metricsets: ["cluster_disk", "cluster_health", "monitor_health", "pool_disk", "osd_tree", "cluster_status"]
+  enabled: true
+  period: 3m
+  hosts: ["virtz02-os1-c1n1:6000"]
+
+- module: mysql
+  metricsets: ["status"]
+  period: 1m
+  hosts: ["tcp(localhost:3306)/"]
+  username: "clustercheck"
+  password: "twelve-GUIDE-PLACE"
+
+- module: redis
+  metricsets: ["info", "keyspace"]
+  period: 1m
+  hosts: ["127.0.0.1:16379"]
+  password: "twelve-GUIDE-PLACE"
+
+- module: rabbitmq
+  metricsets: ["node", "queue"]
+  period: 10s
+  hosts: ["https://10.189.153.69:15672"]
+  ssl.verification_mode: "none"
+
+  username: "admin"
+  password: "twelve-GUIDE-PLACE"
+  enabled: true
+
+- module: memcached
+  metricsets: ["stats"]
+  period: 10s
+  hosts: ["10.189.153.69:11211"]
+  enabled: true
+
+- module: haproxy
+  metricsets: ["info", "stat"]
+  period: 10s
+  #hosts: ["tcp://127.0.0.1:9000"]
+  hosts: ["unix:///var/run/haproxy-stats.sock"]
+  username: "admin"
+  password: "twelve-GUIDE-PLACE"
+
+output.logstash:
+  # The Logstash hosts
+  hosts: ["10.189.81.164:5044", "10.189.81.196:5044"]
+  #ssl.certificate_authorities: ["/etc/pki/ca-trust/source/anchors/ctlsdn-io.crt"]
+  #ssl.certificate: "/etc/ssl/certs/virtz02_os1/host.pem"
+  #ssl.key: "/etc/ssl/certs/virtz02_os1/host.pem"
+  #insecure: false

@@ -1,0 +1,348 @@
+fields:
+  cloud_name: virtz02_os1
+  cloud_type: PSB
+  cloud_version: 3.1.4
+
+filebeat.prospectors:
+
+- name: collectd_logs
+  type: log
+  paths:
+    - "/var/log/collectd/*.log"
+  exclude_files: [".gz$", ".xz$"]
+  exclude_lines: ['^\[.*\ write_log\ values:']
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [collectd]
+
+- type: log
+  paths:
+    - "/var/log/*"
+    - "/var/log/audit/*.log"
+  exclude_files: [".gz$", "-[0-9]+$", ".xz$"]
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [syslog]
+
+- type: log
+  paths:
+    - "/var/log/nova/*.log"
+  exclude_files: [".gz$", ".xz$"]
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [openstack_logs, nova]
+
+- type: log
+  paths:
+    - "/var/log/neutron/*.log"
+  exclude_files: [".gz$", ".xz$"]
+  multiline.pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3} [0-9]+ (ERROR|WARNING|INFO|DEBUG|TRACE) [0-9A-Za-z._]+ \['
+  multiline.negate: true
+  multiline.match: after
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [openstack_logs, neutron]
+
+- type: log
+  paths:
+    - "/var/log/cinder/*.log"
+  exclude_files: [".gz$", ".xz$"]
+  multiline.pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3} [0-9]+ (ERROR|WARNING|INFO|DEBUG|TRACE) [0-9A-Za-z._]+ \['
+  multiline.negate: true
+  multiline.match: after
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [openstack_logs, cinder]
+
+- type: log
+  paths:
+    - "/var/log/glance/*.log"
+  exclude_files: [".gz$", ".xz$"]
+  multiline.pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3} [0-9]+ (ERROR|WARNING|INFO|DEBUG|TRACE) [0-9A-Za-z._]+ \['
+  multiline.negate: true
+  multiline.match: after
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [openstack_logs, glance]
+
+- type: log
+  paths:
+    - "/var/log/heat/*.log"
+  exclude_files: [".gz$", ".xz$"]
+  multiline.pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3} [0-9]+ (ERROR|WARNING|INFO|DEBUG|TRACE) [0-9A-Za-z._]+ \['
+  multiline.negate: true
+  multiline.match: after
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [openstack_logs, heat]
+
+- type: log
+  paths:
+    - "/var/log/httpd/*.log"
+  exclude_files: [".gz$", ".xz$"]
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [http]
+
+- type: log
+  paths:
+    - "/var/log/horizon/*.log"
+  exclude_files: [".gz$", ".xz$"]
+  multiline.pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3} [0-9]+ (ERROR|WARNING|INFO|DEBUG|TRACE) [0-9A-Za-z._]+ \['
+  multiline.negate: true
+  multiline.match: after
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [openstack_logs, horizon]
+
+- type: log
+  paths:
+    - "/var/log/keystone/*.log"
+  exclude_files: [".gz$", ".xz$"]
+  multiline.pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3} [0-9]+ (ERROR|WARNING|INFO|DEBUG|TRACE) [0-9A-Za-z._]+ \['
+  multiline.negate: true
+  multiline.match: after
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [openstack_logs, keystone]
+
+- type: log
+  paths:
+    - "/var/log/mariadb/*.log"
+  exclude_files: [".gz$", ".xz$"]
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [mariadb]
+
+- type: log
+  paths:
+    - "/var/log/mongodb/*.log"
+  exclude_files: [".gz$", ".xz$"]
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [mongodb]
+
+- type: log
+  paths:
+    - "/var/log/openvswitch/*.log"
+  exclude_files: [".gz$", ".xz$"]
+  multiline.pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3} [0-9]+ (ERROR|WARNING|INFO|DEBUG|TRACE) [0-9A-Za-z._]+ \['
+  multiline.negate: true
+  multiline.match: after
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [openstack_logs, openvswitch]
+
+- type: log
+  paths:
+    - "/var/log/pacemaker/*.log"
+    - "/var/log/cluster/*.log"
+  exclude_files: [".gz$", ".xz$"]
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [pacemaker]
+
+- type: log
+  paths:
+    - "/var/log/ceilometer/*.log"
+  exclude_files: [".gz$", ".xz$"]
+  multiline.pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3} [0-9]+ (ERROR|WARNING|INFO|DEBUG|TRACE) [0-9A-Za-z._]+ \['
+  multiline.negate: true
+  multiline.match: after
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [openstack_logs, ceilometer]
+
+- type: log
+  paths:
+    - "/var/log/rabbitmq/*.log-2*"
+  exclude_files: [".gz$", ".xz$"]
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [openstack_backend_service, amqp, rabbitmq]
+
+- type: log
+  paths:
+    - "/var/log/libvirt/*.log"
+  exclude_files: [".gz$", ".xz$"]
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [openstack_backend_service, virtualization, libvirt]
+
+- type: log
+  paths:
+    - "/var/log/nginx/*.log"
+  exclude_files: [".gz$", ".xz$"]
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags: [nginx]
+
+- name: bacula_logs
+  type: log
+  paths:
+    - "/var/log/bareos/*.log"
+  exclude_files: [".gz$",".xz$"]
+  fields:
+    bacula_type: logfile
+    backup_type: logfile
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags:
+    - bacula
+    - bareos
+
+- name: bootrstrap_record
+  type: log
+  paths:
+    - "/var/lib/bareos/*.bsr"
+  multiline.pattern: '^[A-Z]+\='
+  multiline.negate: true
+  multiline.match: after
+  scan_frequency: 30s
+  fields:
+    bacula_type: bootstrap_record
+    backup_type: bootstrap_record
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags:
+    - bacula
+    - bareos
+    - boostrap_record
+    - bsr
+
+- name: backup_mail
+  type: log
+  paths:
+    - "/var/lib/bareos/*.mail"
+  multiline.pattern: '^'
+  multiline.negate: true
+  multiline.match: after
+  scan_frequency: 30s
+  fields:
+    bacula_type: mail
+    backup_type: mail
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags:
+    - bacula
+    - bareos
+    - mail
+
+- name: backup_console_messages
+  type: log
+  paths:
+    - "/var/lib/bareos/*.conmsg"
+  multiline.pattern: '^'
+  multiline.negate: true
+  multiline.match: after
+  scan_frequency: 30s
+  fields:
+    bacula_type: console_messages
+    backup_type: console_messages
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags:
+    - bacula
+    - bareos
+    - messages
+
+- name: nipap_www_logs
+  type: log
+  paths:
+    - "/var/log/nipap-www*"
+  exclude_files: [".gz$",".xz$"]
+  fields:
+    nipap_type: www_logs
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags:
+    - access
+    - error
+    - http
+    - ipam
+    - nipap
+
+- name: ldap_healthcheck_log
+  type: log
+  paths:
+    - "/var/log/ldap_health.log"
+  exclude_files: [".gz$",".xz$"]
+  fields:
+    ldap_type: healthcheck_log
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags:
+    - ldap
+    - healthcheck
+
+- name: postgres_logs
+  type: log
+  paths:
+    - "/var/lib/pgsql/10/data/pg_log/postgresql*"
+  exclude_files: [".gz$",".xz$"]
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags:
+    - ipam
+    - postgres
+
+- name: sssd_logs
+  type: log
+  paths:
+    - "/var/log/sssd/*"
+  exclude_files: [".gz$",".xz$"]
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags:
+    - sssd
+
+- name: rally_logs
+  type: log
+  json.keys_under_root: true
+  json.add_error_key: true
+  paths:
+    - "/var/log/rally/*"
+  exclude_files: [".gz$",".xz$"]
+  close_renamed: true
+  ignore_older: 240h
+  clean_inactive: 264h
+  tags:
+    - rally
+
+output.logstash:
+  hosts: ["10.189.81.164:5044", "10.189.81.196:5044"]
+  loadbalancer: true
+  index: filebeat
+  bulk_max_size: 2048
+  #tls:
+  #  certificate_authorities: ["/etc/pki/ca-trust/source/anchors/ctlsdn-io.crt"]
+  #  ssl.certificate: "/etc/ssl/certs/virtz02_os1/host.pem"
+  #  ssl.key: "/etc/ssl/certs/virtz02_os1/host.pem"
+  #  insecure: false
+
